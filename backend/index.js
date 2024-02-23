@@ -1,6 +1,9 @@
 import express from "express"
 import {connectToDb, getAddr} from "./configs/config.mjs"
-import userRoutes from "./routes/userRoutes.js"
+import userRouter from "./routes/userRouter.js"
+import logger from "./configs/logger.js"
+import logRequest from "./middleware/logRequest.js"
+import tempRouter from "./routes/tempRouter.js"
 
 const app = express()
 connectToDb()
@@ -9,8 +12,9 @@ app.set("Content-Type", "application/json")
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/user', userRoutes)
+app.use('/user', logRequest, userRouter)
+app.use('/temp', logRequest, tempRouter)
 
 app.listen(getAddr(), () => {
-    console.log(`server started on ${getAddr()}`)
+    logger.info(`server started on http://localhost:${getAddr()}`)
 })

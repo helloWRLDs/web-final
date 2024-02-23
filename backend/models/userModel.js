@@ -27,7 +27,8 @@ const userSchema = mongoose.Schema(
             type: String
         },
         gender: {
-            type: String
+            type: String,
+            Enumerator: ["male", "female"]
         },
         isAdmin: {
             type: Boolean,
@@ -42,8 +43,8 @@ const userSchema = mongoose.Schema(
 
 userSchema.pre("save", async function(next) {
     const user = this
-    user.created = new Date()
-    user.password = await bcrypt.hash(user.password, 12)
+    user.created = new Date();
+    user.password = await bcrypt.hash(user.password, 12);
     return next()
 })
 
