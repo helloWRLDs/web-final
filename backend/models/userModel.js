@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcrypt'
 
 const userSchema = mongoose.Schema(
     {
@@ -31,10 +32,20 @@ const userSchema = mongoose.Schema(
         isAdmin: {
             type: Boolean,
             required: true
+        },
+        created: {
+            type: Date
         }
 
     }
 )
+
+userSchema.pre("save", async function(next) {
+    const user = this
+    user.created = new Date()
+    user.password = await bcrypt.hash(user.password, 12)
+    return next()
+})
 
 const User = mongoose.model("User", userSchema);
 

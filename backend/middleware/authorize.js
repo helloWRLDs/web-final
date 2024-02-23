@@ -1,0 +1,2 @@
+
+const authorize = (res, )
