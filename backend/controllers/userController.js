@@ -3,12 +3,11 @@ import User from "../models/userModel.js"
 import bcrypt from 'bcrypt'
 import notify from "../services/notifier.js"
 import jwt from 'jsonwebtoken'
-import { getSecretKey } from "../configs/config.mjs"
 import generateToken from "../services/generateToken.js"
 
-const registerUser = serverErrorHandler(async(req, res, next) => {
+export const registerUser = serverErrorHandler(async(req, res, next) => {
     if (!req.body.email || !req.body.firstName || !req.body.password) {
-        res.status(422).json({message: "Unprocessable Entity: Essential fields are empty"})
+        res.status(422).json({message: "Unprocessable Entity"})
         return
     }
 
@@ -23,7 +22,7 @@ const registerUser = serverErrorHandler(async(req, res, next) => {
     res.status(200).json({message: `User registered with id=${result._id}`})
 })
 
-const loginUser = serverErrorHandler(async(req, res) => {
+export const loginUser = serverErrorHandler(async(req, res) => {
     const user = req.body
     const isExist = await User.findOne({email: user.email}).count()
     if (!isExist) {
@@ -32,11 +31,20 @@ const loginUser = serverErrorHandler(async(req, res) => {
     }
     const existingUser = await User.findOne({email: user.email})
     if (await bcrypt.compare(user.password, existingUser.password)) {
-        generateToken(res, existingUser._id, existingUser.isAdmin)
-        res.status(200).json({message: "login successful"})
+        const token = generateToken(res, existingUser._id, existingUser.isAdmin)
+        //transport token to frontend
+        res.status(200).json({token: token, id: existingUser._id})
     } else {
         res.status(401).json({message: "Wrong password"})
     }
 })
 
-export {registerUser, loginUser}
+export const getUserById = serverErrorHandler(async(req, res) => {
+    const id = req.params.id
+    const user = await User.findOne({_id: id})
+    if (!user) {
+        res.status(404).json({message: `User with such id doesn't exist`})
+        return
+    } 
+    res.status(200).json(user)
+})

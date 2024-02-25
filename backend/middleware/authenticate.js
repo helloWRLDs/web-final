@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken'
 import { getSecretKey } from '../configs/config.mjs'
 
 export const authenticate = async(req, res, next) => {
+    // const authHeader = req.headers.authorization
+    // const token = authHeader.substring(7, authHeader.length);
     const token = req.headers.authorization
     if (!token) {
         res.status(401).json({message: "Authorization Failed(no token)"})

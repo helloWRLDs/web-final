@@ -1,4 +1,6 @@
 import express from "express"
+import cors from 'cors'
+
 import {connectToDb, getAddr} from "./configs/config.mjs"
 import userRouter from "./routes/userRouter.js"
 import logger from "./configs/logger.js"
@@ -12,7 +14,9 @@ app.set("Content-Type", "application/json")
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/user', logRequest, userRouter)
+app.use(cors())
+
+app.use('/users', logRequest, userRouter)
 app.use('/temp', logRequest, tempRouter)
 
 app.listen(getAddr(), () => {
