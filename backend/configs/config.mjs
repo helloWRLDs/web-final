@@ -4,7 +4,7 @@ import logger from './logger.js'
 
 dotenv.config({path: '../.env'})
 
-export const getAddr = () => process.env.BACKADDR
+export const getAddr = () => process.env.BACKADDR;
 
 export const connectToDb = async() => {
     try {
@@ -16,10 +16,12 @@ export const connectToDb = async() => {
     }
 }
 
-export const getSecretKey = () => process.env.SECRET_KEY
+export const getSecretKey = () => process.env.SECRET_KEY;
 
 export const getMailerOptions = () => {
     return {
         "mail": process.env.EMAIL, "password": process.env.EMAILPASS
     }
 }
+
+export const getGitKey = () => process.env.GIT_TOKEN;

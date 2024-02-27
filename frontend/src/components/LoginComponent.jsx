@@ -1,86 +1,127 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { GoInfo } from "react-icons/go";
-import { authenticateUser } from "../api/auth";
+import { IoMailSharp } from "react-icons/io5";
+import { MdOutlinePassword } from "react-icons/md";
+import { authenticateUser } from "../api/userAPI";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 
 const LoginComponent = () => {
+    // redirects
     const navigator = useNavigate()
-    const { updateUser } = useContext(UserContext)
-    const [email, setemail] = useState('')
+    // user context values
+    const { updateId, updateToken, updateAdmin, token, id } = useContext(UserContext)
+    // local states
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [errors, setErrors] = useState({
-        email: "",
-        password: ""
-    })
+    const [error, setError] = useState('')
 
+    useEffect(() => {
+        if (token || id) {
+            navigator('/')
+        }
+    }, [])
+
+
+    //funcs
     const submitForm = (e) => {
         e.preventDefault()
-        authenticateUser({email, password}).then((id) => {
-            if (id) {
-                console.log("here")
-                updateUser(id)
-                navigator(`/users/${id}`)
-            }
-        })
+        authenticateUser({email, password})
+            .then((Response) => {
+                if (Response.status === 200) {
+                    updateId(Response.data.id)
+                    updateToken(Response.data.token)
+                    updateAdmin(Response.data.isAdmin)
+                    navigator(`/users/${Response.data.id}`)
+                }
+                if (Response.status === 404) {
+                    setError("Not registered")
+                }
+            })
 
         // if (validatePassword()) {
-            
+        //     authenticateUser({email, password})
+        //         .then((Response) => {
+        //             console.log(Response.status)
+        //             if (Response.status === 200) {
+        //                 updateId(Response.data.id)
+        //                 updateToken(Response.data.token)
+        //                 if (Response.data.isAdmin) {
+        //                     setIsAdmin(Response.data.isAdmin)
+        //                     console.log(isAdmin)
+        //                 }
+        //                 navigator(`/users/${Response.data.id}`)
+        //             }
+        //             if (Response.status === 404) {
+        //                 setError({email: "Not registered", password: ""})
+        //             }
+        //         })
         // }
     }
 
     const validateEmail = () => {
         let valid = true
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        const errorsCopy = {...errors}
         if (email.trim()) {
-            errorsCopy.email = ''
-            if (emailRegex.test(email)) {errorsCopy.email = ''}
-            else {errorsCopy.email = 'wrong email format'; valid=false;}
-        } else {errorsCopy.email = 'email is required'; valid=false;}
-        setErrors(errorsCopy)
+            setError('')
+            if (emailRegex.test(email)) {
+                setError('')
+            } else {
+                setError('Wrong email format'); 
+                valid=false;
+            }
+        } else {
+            setError('Email is required'); 
+            valid=false;
+        }
         return valid
     }
 
     const validatePassword = () => {
         let valid = validateEmail()
         const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-        const errorsCopy = {...errors}
         if (password.trim()) {
-            errorsCopy.password = ''
-            if (passwordRegex.test(password)) {errorsCopy.password = ''}
-            else {errorsCopy.password = 'min 8 symbols(at least 1 let and 1 num)'; valid=false}
+            setError('')
+            if (passwordRegex.test(password)) {setError('')}
+            else {setError('Min 8 symbols(1 letter & 1 num)'); valid=false}
         }
-        else errorsCopy.password = "password is required"; valid=false;
-        setErrors(errorsCopy)
+        else setError("Password is required"); valid=false;
         return valid
     }
 
     return (
-        <div className="mx-auto h-full container">
-            <div className="w-1/2 h-3/4 mt-52 mx-auto shadow-2xl bg-slate-100 bg-opacity-10 rounded-2xl">
-                <form className="text-center py-7 text-xl">
-                    {/* <h2 className="mb-8 text-3xl">Login</h2> */}
-                    <label htmlFor="email" className="block">Email:</label>
-                    <input type="email" onChange={(e) => setemail(e.target.value)} onBlur={validateEmail} name="email" id="email" className=" px-2 py-1 w-1/3 mb-7 rounded-sm"/>
-                        { errors.email &&
-                            <p id="email-error" className="relative left-0 -top-7 text-red-500 flex items-center justify-center">
-                                <GoInfo className="mr-1"/>{errors.email}
-                            </p>
-                        }
+        <section className="">
+            <div className="container mx-auto">
+                <form className="text-center mx-auto w-1/6 mb-0 mt-52">
+                    <label htmlFor="email" className="relative text-gray-400 focus-within:text-gray-600 block mb-2">
+                        <IoMailSharp className="pointer-events-none w-5 h-5 translate-x-1/4 -translate-y-1/2 absolute top-1/2 left-1"/>
+                        <input type="email" name="email" onChange={(e) => setEmail(e.target.value)} onBlur={validateEmail} id="email" placeholder="example@gmail.com" className="form-input w-full pl-10 py-2 rounded-sm"/>
+                    </label>
 
-                    <label htmlFor="password" className="block">Password:</label>
-                    <input type="password" onChange={(e) => setPassword(e.target.value)}  name="password" id="password" className=" px-2 py-1 w-1/3 mb-7 rounded-sm"/>
-                        { errors.password &&
-                            <p id="password-error" className="relative left-0 -top-7 text-red-500 flex items-center justify-center z-10">
-                                <GoInfo className="mr-1"/>{errors.password}
-                            </p>
-                        }
-
-                    <button onClick={submitForm} className="block w-1/6 mx-auto rounded-md bg-cyan-600 hover:bg-cyan-500 active:bg-cyan-700 text-white px-5 py-2">Login</button>
+                    <label htmlFor="password" className="relative text-gray-400 focus-within:text-gray-600 block mb-2">
+                        <MdOutlinePassword className="pointer-events-none w-5 h-5 translate-x-1/4 -translate-y-1/2 absolute top-1/2 left-1"/>
+                        <input type="password" name="password" onChange={(e) => setPassword(e.target.value)} id="password" placeholder="Password" className="form-input w-full pl-10 py-2 rounded-sm"/>
+                    </label>
+                    {error &&
+                        <div className="pointer-events-none w-full flex items-center px-2 py-2 rounded-sm bg-red-600 text-white mb-2"><GoInfo className="mr-3 w-5 h-5"/>{error}</div>
+                    }
+                    
+                    <button onClick={submitForm} className="w-full rounded-sm bg-slate-600 hover:bg-slate-500 active:bg-slate-700 text-white px-5 py-2 uppercase shadow-2xl">
+                        Login
+                    </button>
                 </form>
+
+                <div className="w-1/6 mx-auto text-center py-2 flex items-center">
+                    <hr className="w-1/2 border-1/2 border-slate-600"/>
+                    <span className="px-2 mx-auto">or</span>
+                    <hr className="w-1/2 border-1/2 border-slate-600"/>
+                </div>
+
+                <div className="w-1/6 mx-auto text-center">
+                    <p className=""><a href="/signup" className="text-blue-500 underline underline-offset-2">Sign up</a>, if you haven't yet.</p>
+                </div>
             </div>
-        </div>
+        </section>
     )
 }
 

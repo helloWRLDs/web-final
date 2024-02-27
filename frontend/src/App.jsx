@@ -6,6 +6,8 @@ import RegisterComponent from './components/RegisterComponent'
 import MainComponent from './components/MainComponent'
 import { UserProvider } from './context/UserContext'
 import UserComponent from './components/UserComponent'
+import UsersComponent from './components/UsersComponent'
+import EditUserComponent from './components/EditUserComponent'
 
 function App() {
   return (
@@ -15,9 +17,11 @@ function App() {
         <HeaderComponent />
           <Routes>
             <Route path='/login' element= {< LoginComponent />}/>
-            <Route path='/register' element = {< RegisterComponent />} />
+            <Route path='/signup' element = {< RegisterComponent />} />
             <Route path='/' element= {< MainComponent />} />
             <Route path='/users/:id' element= {< UserComponent />} />
+            <Route path='/users/' element= {<UsersComponent />} />
+            <Route path='/users/:id/edit' element = {<EditUserComponent />} />
           </Routes>
         <FooterComponent />
       </UserProvider>
