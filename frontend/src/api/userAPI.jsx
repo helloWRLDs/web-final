@@ -63,3 +63,15 @@ export const getAllUsers = async() => {
     } 
     return response
 }
+
+export const changeUserRole = async(id, role) => {
+    const requestString = BASE_API + `/${id}`
+    let response
+    try {
+        response = await axios.put(requestString, {isAdmin: role}, config)
+    } catch (error) {
+        console.error(error)
+        response = error.response        
+    }
+    return response
+}

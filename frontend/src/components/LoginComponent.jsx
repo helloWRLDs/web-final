@@ -5,12 +5,13 @@ import { MdOutlinePassword } from "react-icons/md";
 import { authenticateUser } from "../api/userAPI";
 import { UserContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { FooterComponent } from "./StaticComponents";
 
 const LoginComponent = () => {
     // redirects
     const navigator = useNavigate()
     // user context values
-    const { updateId, updateToken, updateAdmin, token, id } = useContext(UserContext)
+    const { login, token, id } = useContext(UserContext)
     // local states
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -29,9 +30,10 @@ const LoginComponent = () => {
         authenticateUser({email, password})
             .then((Response) => {
                 if (Response.status === 200) {
-                    updateId(Response.data.id)
-                    updateToken(Response.data.token)
-                    updateAdmin(Response.data.isAdmin)
+                    login(Response.data.id, Response.data.token, Response.data.isAdmin)
+                    // updateId(Response.data.id)
+                    // updateToken(Response.data.token)
+                    // updateAdmin(Response.data.isAdmin)
                     navigator(`/users/${Response.data.id}`)
                 }
                 if (Response.status === 404) {

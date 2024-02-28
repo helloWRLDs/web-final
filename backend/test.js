@@ -1,11 +1,13 @@
-import { getGitProfile } from "./util/githubService.js";
+import Portfolio from "./models/portfolioModel.js";
+import { connectToDb } from "./configs/config.mjs";
+import Project from "./models/projectModel.js";
+import axios from "axios";
 
-const data1 = {
-    name: "Danil"
+const main = async() => {
+    axios.get('https://api.github.com/repos/helloWRLDs/bookings/languages').then(Response => {
+        console.log(Response.data)
+    })
 }
 
-const data2 = {
-    surname: "Li"
-}
-const data3 = Object.assign(data1, data2)
-console.log(data3)
+main()
+

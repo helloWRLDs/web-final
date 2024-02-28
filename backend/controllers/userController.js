@@ -4,19 +4,44 @@ import bcrypt from 'bcrypt'
 import notify from "../services/notifier.js"
 import generateToken from "../services/generateToken.js"
 import logger from "../configs/logger.js"
+import Portfolio from "../models/portfolioModel.js"
+import { getGitRepositories } from "../util/githubService.js"
+import Project from "../models/projectModel.js"
+import axios from "axios"
+import { getGitKey } from "../configs/config.mjs"
 
 export const registerUser = serverErrorHandler(async(req, res) => {
     if (!req.body.email || !req.body.firstName || !req.body.password) {
         res.status(422).json({message: "Unprocessable Entity"})
         return
     }
-
+    // ADD USER TO DB
     const newUser = new User(req.body)
     if (await User.findOne({email: newUser.email})) {
         res.status(400).json({message: "User with such email alredy exists"})
         return
     }
     const result = await newUser.save()
+    // INITIALIZE EMPTY PORTFOLIO
+    const newPortfolio = new Portfolio({owner: result._id})
+    await newPortfolio.save()
+    // PARSE PROJECT FROM GIT IF EXISTS
+    if (result.git.login) {
+        try {   
+            const response = await getGitRepositories(result.git.login)
+            const projects = response.data.map(item => {
+                return new Project({
+                    "name": item.name ?? item.full_name,
+                    "description": item.description, 
+                    "additional_info": item.language,
+                    "link": item.html_url
+                })
+            })
+            await Portfolio.updateOne({_id: newPortfolio._id}, {$set: {projects: projects}})
+        } catch(error) {
+            logger.error(error)
+        }
+    }
     logger.info(`user registered with id=${result._id}`)
     // notify(newUser.email, newUser.firstName)
     res.status(200).json({message: `User registered with id=${result._id}`})

@@ -7,8 +7,8 @@ const userRouter = express.Router()
 userRouter.post('/signup', registerUser)
 userRouter.post('/login', loginUser,)
 
-userRouter.get('/:id', authenticate, getUserById)
 userRouter.get('/', authenticate, getUsers)
+userRouter.get('/:id', authenticate, getUserById)
 userRouter.put('/:id', authenticate, putUserById)
 
 userRouter.delete('/:id', authenticate, authenticateAdmin, deleteUserById)

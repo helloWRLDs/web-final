@@ -24,16 +24,6 @@ export const getGitProfile = async(email) => {
     }
 }
 
-// export const getGitProfile = async(email) => {
-//     const requestString = url + `/search/users?q=${email}`
-//     try {
-//         const response = await fetch(requestString, {headers: {"Authorization": `Bearer ${getGitKey}`}})
-//         return response
-//     } catch(error) {
-//         logger.error(error)
-//     }
-// }
-
 export const getGitRepositories = async(userName) => {
     const requestString = url + `/users/${userName}/repos`
     try {

@@ -58,7 +58,7 @@ const UserComponent = () => {
                             :
                             <p>Regular User</p>
                         }
-                        {localStorage.getItem('id') === user._id || isAdmin &&
+                        {localStorage.getItem('id') === user._id &&
                             <button onClick={edit} className="w-1/5 mx-auto bg-blue-600 hover:bg-blue-500 active:bg-blue-700 block text-white px-5 py-2 rounded-md">Edit</button>
                         }
                         {localStorage.getItem('id') === user._id &&

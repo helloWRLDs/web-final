@@ -8,6 +8,7 @@ import { UserProvider } from './context/UserContext'
 import UserComponent from './components/UserComponent'
 import UsersComponent from './components/UsersComponent'
 import EditUserComponent from './components/EditUserComponent'
+import PortfolioComponent from './components/PortfolioComponent'
 
 function App() {
   return (
@@ -22,8 +23,9 @@ function App() {
             <Route path='/users/:id' element= {< UserComponent />} />
             <Route path='/users/' element= {<UsersComponent />} />
             <Route path='/users/:id/edit' element = {<EditUserComponent />} />
+            <Route path='/users/:id/portfolio' element = {<PortfolioComponent />} />
           </Routes>
-        <FooterComponent />
+        {/* <FooterComponent /> */}
       </UserProvider>
       </BrowserRouter>
     </div>
